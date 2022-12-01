@@ -3,11 +3,10 @@ package advent2022;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class Day1Test {
 
-    private Day1 subject = new Day1();
+    private final Day1 subject = new Day1();
 
     @Test
     void part1_withSampleInput() {
