@@ -16,7 +16,7 @@ public class Day6 {
             charCounts.put(datastream.charAt(i), charCounts.getOrDefault(datastream.charAt(i), 0) + 1);
         }
 
-        for (int left = 0; left < datastream.length(); left++) {
+        for (int left = 0; left < datastream.length() - distinctTarget; left++) {
             var right = left + distinctTarget;
             if (allCharsUnique(charCounts)) return right;
             charCounts.put(datastream.charAt(left), charCounts.get(datastream.charAt(left)) - 1);
@@ -26,6 +26,9 @@ public class Day6 {
     }
 
     private boolean allCharsUnique(HashMap<Character, Integer> charCounts) {
-        return charCounts.values().stream().filter(value -> value > 1).toList().size() == 0;
+        for (var value : charCounts.values()) {
+            if (value > 1) return false;
+        }
+        return true;
     }
 }
