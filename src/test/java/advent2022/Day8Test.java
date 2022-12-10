@@ -19,4 +19,16 @@ class Day8Test {
     void part1_answer() {
         System.out.println(subject.getVisibleTrees("input.txt"));
     }
+
+    @Test
+    void part2_withSampleInput() {
+        var result = subject.getHighestScenicScore("sampleInput.txt");
+
+        assertThat(result).isEqualTo(8);
+    }
+
+    @Test
+    void part2_answer() {
+        System.out.println(subject.getHighestScenicScore("input.txt"));
+    }
 }
