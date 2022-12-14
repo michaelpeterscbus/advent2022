@@ -22,4 +22,18 @@ class Day12Test {
 
         System.out.println(result);
     }
+
+    @Test
+    void part2_withTestInput() {
+        var result = subject.getFewestStepsFromBestStartingPosition("sampleInput.txt");
+
+        assertThat(result).isEqualTo(29);
+    }
+
+    @Test
+    void part2_answer() {
+        var result = subject.getFewestStepsFromBestStartingPosition("input.txt");
+
+        System.out.println(result);
+    }
 }

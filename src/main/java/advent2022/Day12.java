@@ -6,7 +6,8 @@ import lombok.SneakyThrows;
 import java.awt.*;
 import java.io.File;
 import java.nio.file.Files;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,19 +15,44 @@ public class Day12 {
 
     public int getFewestSteps(String filename) {
         var heightmapWithMarkers = getHeightmapAndMarkers(filename);
-        var heightmap = heightmapWithMarkers.heightmap;
-        var start = heightmapWithMarkers.startingPoint;
-        var end = heightmapWithMarkers.endingPoint;
 
+        return explore(heightmapWithMarkers.heightmap, heightmapWithMarkers.startingPoint, heightmapWithMarkers.endingPoint);
+    }
+
+    public int getFewestStepsFromBestStartingPosition(String filename) {
+        var heightmapWithMarkers = getHeightmapAndMarkers(filename);
+        var heightmap = heightmapWithMarkers.heightmap;
+        var startingPoints = getStartingPoints(heightmap);
+
+        var minSteps = Integer.MAX_VALUE;
+        for (var startingPoint : startingPoints) {
+            var attempt = explore(heightmapWithMarkers.heightmap, startingPoint, heightmapWithMarkers.endingPoint);
+            if (attempt != -1) {
+                minSteps = Math.min(attempt, minSteps);
+            }
+        }
+        return minSteps;
+    }
+
+    private List<Point> getStartingPoints(char[][] heightmap) {
+        var points = new ArrayList<Point>();
+        for (int i = 0; i < heightmap.length; i++) {
+            for (int j = 0; j < heightmap[0].length; j++) {
+                if (heightmap[i][j] == 'a') points.add(new Point(i, j));
+            }
+        }
+        return points;
+    }
+
+    private int explore(char[][] heightmap, Point start, Point end) {
+        var distances = initializeDistances(heightmap);
         var queue = new LinkedList<PointWithDistance>();
         queue.add(new PointWithDistance(start, 0));
-        var visited = new HashSet<Point>();
         while (!queue.isEmpty()) {
             var current = queue.remove();
             var currentChar = heightmap[current.point.x][current.point.y];
             if (current.point.equals(end)) return current.distance;
 
-            visited.add(current.point);
             var nextPoints = List.of(
                     new Point(current.point.x + 1, current.point.y),
                     new Point(current.point.x - 1, current.point.y),
@@ -35,13 +61,24 @@ public class Day12 {
 
             for (var point : nextPoints) {
                 if (isInbounds(point.x, point.y, heightmap)
-                        && isAtMostOneStepHigher(currentChar, heightmap[point.x][point.y]) && !visited.contains(point)) {
+                        && isAtMostOneStepHigher(currentChar, heightmap[point.x][point.y]) && distances.get(point) == -1) {
                     queue.add(new PointWithDistance(point, current.distance + 1));
+                    distances.put(point, current.distance + 1);
                 }
             }
 
         }
-        return 0;
+        return -1;
+    }
+
+    private HashMap<Point, Integer> initializeDistances(char[][] heightmap) {
+        var distances = new HashMap<Point, Integer>();
+        for (int i = 0; i < heightmap.length; i++) {
+            for (int j = 0; j < heightmap[0].length; j++) {
+                distances.put(new Point(i, j), -1);
+            }
+        }
+        return distances;
     }
 
     @SneakyThrows
@@ -75,9 +112,8 @@ public class Day12 {
     }
 
     private boolean isAtMostOneStepHigher(char current, char next) {
-        if (current == next) return true;
         if (current + 1 == next) return true;
-        if (current > next) return true;
+        if (current >= next) return true;
         return false;
     }
 
